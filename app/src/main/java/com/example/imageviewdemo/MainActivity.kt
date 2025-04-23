@@ -36,56 +36,5 @@ class MainActivity : AppCompatActivity() {
             replace(R.id.fragment_container, PreviewWindow())
             commit()
         }
-
-//        val data = mutableListOf<Bitmap>()
-//        val adapter = PreviewCardAdapter(data)
-//
-//        recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
-//
-//        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-//        } else {
-//            recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-//        }
-//        recyclerView.adapter = adapter
-//
-//        val urlList = listOf("https://www.google.com", "https://www.youtube.com", "https://www.gmail.com")
-//        startWebViewCapture(webView, urlList) { bitmap ->
-//            data.add(bitmap)
-//            adapter.notifyItemInserted(data.lastIndex)
-//            Log.i("PreviewCardAdapter", "width: ${bitmap.width}, height: ${bitmap.height}")
-//        }
     }
-
-//    private fun startWebViewCapture(webView: WebView, urlList: List<String>, onBitmapCaptured: (Bitmap) -> Unit) {
-//        var index = 0
-//
-//        webView.webViewClient = object : WebViewClient() {
-//            override fun onPageFinished(view: WebView?, url: String?) {
-//                super.onPageFinished(view, url)
-//                webView.postDelayed({
-//                    Log.i(TAG, "index is ${index}")
-//                    val bitmap = captureWebView(webView)
-//                    onBitmapCaptured(bitmap)
-//
-//                    index++
-//
-//                    if (index < urlList.size) {
-//                        webView.loadUrl(urlList[index])
-//                    }
-//                }, 1000)
-//            }
-//        }
-//        webView.loadUrl(urlList[index])
-//    }
-//
-//    private fun captureWebView(webView: WebView): Bitmap {
-//        webView.visibility = View.INVISIBLE
-//        val bitmap = createBitmap(webView.width, webView.height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//
-//        webView.draw(canvas)
-//        webView.visibility = View.GONE
-//        return bitmap
-//    }
 }

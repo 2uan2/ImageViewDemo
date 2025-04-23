@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PreviewWindow() : Fragment(R.layout.preview_window) {
@@ -25,30 +24,36 @@ class PreviewWindow() : Fragment(R.layout.preview_window) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val data = mutableListOf<Bitmap>()
-        val adapter = PreviewCardAdapter(data)
-
         webView = view.findViewById<WebView>(R.id.web_view)
         recyclerView = view.findViewById<RecyclerView>(R.id.recycler_view)
 
+        // data is the bitmaps for the image view
+        val data = mutableListOf<Bitmap>()
+        val adapter = PreviewCardAdapter(data)
+
+        // get the aspect ratio of the screen and to set the WebView size to the current layout's orientation
         val displayMetrics = requireContext().resources.displayMetrics
         val screenWidth = displayMetrics.widthPixels
         val screenHeight = displayMetrics.heightPixels
 
-        val aspectRatio = "${if ( screenWidth > screenHeight ) "W" else "H"},$screenWidth:$screenHeight"
+        val ratio = "${if ( screenWidth > screenHeight ) "W" else "H"},$screenWidth:$screenHeight"
+        Log.i("PreviewWindow", "windows aspect ratio: $ratio")
 
         val layoutParams = webView.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.dimensionRatio = aspectRatio
+        layoutParams.dimensionRatio = ratio
 
         webView.layoutParams = layoutParams
 
-        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+        // set the layoutManager for the recyclerview depending on if the screen is in landsacpe or portrait
+         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         } else {
             recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         }
         recyclerView.adapter = adapter
 
+        // generate some test preview card, in AnkiDroid, this part will be the html to render by the WebView
         val urlList = listOf("https://www.google.com", "https://www.youtube.com", "https://www.gmail.com")
         viewLifecycleOwner.lifecycleScope.launch {
             startWebViewCapture(webView, urlList, requireContext()) { bitmap ->
@@ -68,24 +73,27 @@ class PreviewWindow() : Fragment(R.layout.preview_window) {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
+                // maybe delay some amount of time for if the content is still loading
                 webView.postDelayed({
-                    Log.i(TAG, "index is ${index}")
                     val bitmap = captureWebView(webView, context)
                     onBitmapCaptured(bitmap)
 
                     index++
 
+                    // load the next data if still more to be loaded
                     if (index < urlList.size) {
                         webView.loadUrl(urlList[index])
                     }
                 }, 1000)
             }
         }
+
+        // load the initial data
         webView.loadUrl(urlList[index])
     }
 
     private fun captureWebView(webView: WebView, context: Context): Bitmap {
-        webView.visibility = View.INVISIBLE
+//        webView.visibility = View.INVISIBLE
 
 //        val width = context.resources.displayMetrics.widthPixels
 //        val height = context.resources.displayMetrics.heightPixels
@@ -94,7 +102,7 @@ class PreviewWindow() : Fragment(R.layout.preview_window) {
         val canvas = Canvas(bitmap)
 
         webView.draw(canvas)
-        webView.visibility = View.GONE
+//        webView.visibility = View.GONE
         return bitmap
     }
 }
